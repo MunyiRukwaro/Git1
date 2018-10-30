@@ -21,16 +21,17 @@ import javax.swing.JTable;
 import javax.swing.table.TableColumn;
 public class AddStock extends javax.swing.JDialog {
 
-    String url = "jdbc:mysql://localhost:3306/kitchen";
+    String url = "jdbc:mysql://localhost:3306/sports";
     String username = "root";
     String password = "";
     Connection conn;
     Statement stm; 
-    JTable DrinksTable,stable;
+    JTable ProductsTable,stable;
     int A,B;
     JScrollPane scrollPane;
-    String DrinkName,DrinkPrice;
-    String DrinkID="";
+    String ProductName,ProductPrice;
+    String ProductID="";
+    String quantity;
 
 
     /**
@@ -50,14 +51,14 @@ Vector data = new Vector();
 try {
 Class.forName("com.mysql.jdbc.Driver");
  conn = DriverManager.getConnection(url,username,password);
-String sql = "SELECT ID,Name,Price from inventory WHERE Category='Drinks' && Quantity>1";
+String sql = "SELECT ID,Name,Price,Quantity from stock";
 stm = conn.createStatement();
 ResultSet rs = stm.executeQuery( sql );
 ResultSetMetaData md = rs.getMetaData();
 int columns = md.getColumnCount();
 for (int i = 1; i <= columns; i++) {
 if(i==1){columnNames.addElement("ID" );}
-else if(i==2){columnNames.addElement("Food Name" );}
+else if(i==2){columnNames.addElement("Item" );}
 else if(i==3){columnNames.addElement("Price" );}
 else{
     columnNames.addElement(md.getColumnName(i));
@@ -91,9 +92,9 @@ stable.addMouseListener(new MouseAdapter()
     public void mouseClicked(MouseEvent evt)  
     {  
    int row = stable.getSelectedRow(); 
-   DrinkID=String.valueOf(stable.getModel().getValueAt(row, 0));
-   DrinkName=String.valueOf(stable.getModel().getValueAt(row, 1));
-   DrinkPrice=String.valueOf(stable.getModel().getValueAt(row, 2));
+   ProductID=String.valueOf(stable.getModel().getValueAt(row, 0));
+   ProductName=String.valueOf(stable.getModel().getValueAt(row, 1));
+   ProductPrice=String.valueOf(stable.getModel().getValueAt(row, 2));
    
        }
     
@@ -107,59 +108,55 @@ jPanel2.add( scrollPane );
 //p.setSize(245,220);
 
 }
-private void MakeDrinkOrder()
+private void AddProduct()
 {
 try { 
          Class.forName("com.mysql.jdbc.Driver");
          conn = DriverManager.getConnection(url,username,password);
          PreparedStatement statement = conn.prepareStatement
-         ("INSERT INTO Orders (`OrderTable`, `FoodID`, `Name`, `Price`) VALUES(?,?,?,?)");
-         statement.setString(1,OrderTable.getText());
-         statement.setString(2,DrinkID);
-         statement.setString(3,DrinkName);
-         statement.setString(4,DrinkPrice);
-                 
-         statement.executeUpdate();
-         statement.close();
-            
-         int k;
-            k=JOptionPane.showConfirmDialog(jPanel2,"An order for "+DrinkName+" has been successfully placed! Do you wish to make another drink order?","Order Made",JOptionPane.YES_NO_OPTION);
-        if(k==JOptionPane.YES_OPTION)
-        {
-          ReduceDrink();              
-         this.dispose();
-         AddStock dialog = new AddStock(new javax.swing.JFrame(), true);
-         dialog.setVisible(true);
-        }
-        else{
-            ReduceDrink();
-            this.dispose();}    
-conn.close();
-        }
-         catch (Exception exc) {  // process error
-            System.out.println("process error" + exc);
-                       JOptionPane.showMessageDialog(jPanel2,"Sorry, An Error Occurred!","Error!",JOptionPane.ERROR_MESSAGE);
-                }
-}
-private void ReduceDrink()
-{
-try { 
-         Class.forName("com.mysql.jdbc.Driver");
-         conn = DriverManager.getConnection(url,username,password);
-         PreparedStatement statement = conn.prepareStatement
-         ("UPDATE inventory SET Quantity=Quantity-1 WHERE ID="+DrinkID+"");
+         ("UPDATE stock SET Quantity=Quantity+"+quantity+" WHERE ID="+ProductID+"");
                           
          statement.executeUpdate();
          statement.close();
-           
-conn.close();
+         conn.close();
+         
+         int k;
+            k=JOptionPane.showConfirmDialog(jPanel2,""+quantity+" added for "+ProductName+"! Do you wish to add more?","Stock Addition",JOptionPane.YES_NO_OPTION);
+        if(k==JOptionPane.YES_OPTION)
+        {
+         this.dispose();
+         SellOthers dialog = new SellOthers(new javax.swing.JFrame(), true);
+         dialog.setVisible(true);
+        }
         }
          catch (Exception exc) {  // process error
             System.out.println("process error" + exc);
                        JOptionPane.showMessageDialog(jPanel2,"Sorry, An Error Occurred!","Error!",JOptionPane.ERROR_MESSAGE);
                 }
 }
-
+private void popAddition(){
+    try {
+ 
+            quantity = JOptionPane.showInputDialog(jPanel2, "How Many Items Do You Wish To Sell?");
+			int qty=Integer.parseInt(quantity);
+            if(quantity == null ){
+            JOptionPane.showMessageDialog(jPanel2,"Sorry, Input a number value!","Wrong Datatype!",JOptionPane.ERROR_MESSAGE);
+            }
+            else{
+                qty = Integer.parseInt(quantity);
+                AddProduct();
+            }
+            }
+             
+ 
+            catch (NumberFormatException e) {
+ 
+            JOptionPane.showMessageDialog(jPanel2,"Sorry,Input a number value!","Wrong Datatype!",JOptionPane.ERROR_MESSAGE);
+            this.dispose();
+            AddStock dialog = new AddStock(new javax.swing.JFrame(), true);
+            dialog.setVisible(true);
+            }
+}
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -170,32 +167,21 @@ conn.close();
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
-        jLabel3 = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         jToggleButton1 = new javax.swing.JToggleButton();
         jToggleButton2 = new javax.swing.JToggleButton();
-        OrderTable = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Place Order- Drinks");
 
-        jPanel1.setBackground(new java.awt.Color(153, 0, 153));
+        jPanel1.setBackground(new java.awt.Color(51, 0, 204));
 
-        jLabel3.setFont(new java.awt.Font("Segoe UI Semibold", 0, 14)); // NOI18N
-        jLabel3.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel3.setText("Please choose what you want us to serve you, click 'Order Now' and we will serve you right away.");
-
-        jLabel4.setFont(new java.awt.Font("Segoe UI Semibold", 0, 14)); // NOI18N
-        jLabel4.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel4.setText("You are on Table No:");
-
-        jLabel5.setFont(new java.awt.Font("Segoe UI Semibold", 0, 14)); // NOI18N
+        jLabel5.setFont(new java.awt.Font("Segoe UI Semibold", 1, 18)); // NOI18N
         jLabel5.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel5.setText("This is what is available today:");
+        jLabel5.setText("Add stock levels");
 
-        jPanel2.setBackground(new java.awt.Color(153, 0, 153));
+        jPanel2.setBackground(new java.awt.Color(51, 0, 204));
         jPanel2.setMaximumSize(new java.awt.Dimension(668, 379));
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
@@ -209,7 +195,7 @@ conn.close();
             .addGap(0, 379, Short.MAX_VALUE)
         );
 
-        jToggleButton1.setText("Make Order");
+        jToggleButton1.setText("Add Stock");
         jToggleButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jToggleButton1ActionPerformed(evt);
@@ -222,10 +208,6 @@ conn.close();
                 jToggleButton2ActionPerformed(evt);
             }
         });
-
-        OrderTable.setFont(new java.awt.Font("Segoe UI Semibold", 0, 14)); // NOI18N
-        OrderTable.setForeground(new java.awt.Color(255, 255, 255));
-        OrderTable.setText("15");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -240,19 +222,11 @@ conn.close();
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(51, 51, 51)
-                        .addComponent(jLabel3))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(256, 256, 256)
                         .addComponent(jLabel5))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(27, 27, 27)
-                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(271, 271, 271)
-                        .addComponent(jLabel4)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(OrderTable)))
+                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
@@ -260,19 +234,13 @@ conn.close();
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jLabel5)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel3)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(34, 34, 34)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jToggleButton1)
                     .addComponent(jToggleButton2))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 46, Short.MAX_VALUE)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel4)
-                    .addComponent(OrderTable))
-                .addGap(26, 26, 26))
+                .addContainerGap(87, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -295,17 +263,18 @@ this.dispose();        // TODO add your handling code here:
 
     private void jToggleButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton1ActionPerformed
 
-        if(DrinkID=="")
+        if(ProductID=="")
         {
-        JOptionPane.showMessageDialog(jPanel2,"Sorry, you have not chosen any food to order for!","No Input!",JOptionPane.WARNING_MESSAGE);
+        JOptionPane.showMessageDialog(jPanel2,"Sorry, you have not chosen any product to add stocks to!","No Input!",JOptionPane.WARNING_MESSAGE);
 
         }
         else{
         int choice;
-            choice=JOptionPane.showConfirmDialog(jPanel2,"An order for "+DrinkName+" will be  placed! Are you sure you want to place the order?","Order Confirmation",JOptionPane.YES_NO_OPTION);
+            choice=JOptionPane.showConfirmDialog(jPanel2,""+ProductName+" will be  added! Are you sure you want to proceed?","Confirmation",JOptionPane.YES_NO_OPTION);
         if(choice==JOptionPane.YES_OPTION)
         {
-          MakeDrinkOrder();              
+          popAddition();
+                          
                  }}
                 // TODO add your handling code here:
     }//GEN-LAST:event_jToggleButton1ActionPerformed
@@ -356,9 +325,6 @@ this.dispose();        // TODO add your handling code here:
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel OrderTable;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
