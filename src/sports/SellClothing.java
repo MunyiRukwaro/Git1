@@ -160,7 +160,7 @@ conn.close();
         }
          catch (Exception exc) {  // process error
             System.out.println("process error" + exc);
-                       JOptionPane.showMessageDialog(jPanel2,"Sorry, An Error Occurred!","Error!",JOptionPane.ERROR_MESSAGE);
+                       JOptionPane.showMessageDialog(jPanel2,"Sorry, An Error Occurred while accessing the data!","Error!",JOptionPane.ERROR_MESSAGE);
                 }
 }
 private void evaluateQuantity()
