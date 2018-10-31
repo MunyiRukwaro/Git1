@@ -59,7 +59,7 @@ try {
 catch (Exception exc) 
       {  // process error
             System.out.println("process error" + exc);
-            JOptionPane.showMessageDialog(jPanel1,"Sorry, Go Home Kevin","Error!",JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(jPanel1,"Sorry, Go Home","Error!",JOptionPane.ERROR_MESSAGE);
             System.exit(0);
       }
       }
@@ -92,7 +92,7 @@ if(pass.equals(pass1))
     }
  else
      {
-     JOptionPane.showMessageDialog(jPanel1," Wrong Password You Entered!","Wrong Input!",JOptionPane.WARNING_MESSAGE);
+     JOptionPane.showMessageDialog(jPanel1," Wrong Password Entered!","Wrong Input!",JOptionPane.WARNING_MESSAGE);
      pas.setText("");
                }
 }
@@ -211,7 +211,7 @@ String passw;
         passw=new String(pas.getPassword());
         if(passw.equals(""))
             {
-            JOptionPane.showMessageDialog(jPanel1,"Sorry, you did not enter the password!","Missing Passorwd!",JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(jPanel1,"Sorry, you didn't enter the password!","Missing Passorwd!",JOptionPane.INFORMATION_MESSAGE);
             pas.requestFocus();
 
             } 
@@ -221,7 +221,7 @@ String passw;
 
     private void jToggleButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton2ActionPerformed
             int y;
-            y=JOptionPane.showConfirmDialog(jPanel1,"Do Really You Want to Exit Sports System?","Confirm!",JOptionPane.YES_NO_OPTION);
+            y=JOptionPane.showConfirmDialog(jPanel1,"Do Really You Want to Exit?","Confirm!",JOptionPane.YES_NO_OPTION);
                 if(y==JOptionPane.YES_OPTION)
                     {
                         this.dispose();
